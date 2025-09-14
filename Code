@@ -1,0 +1,19 @@
+
+import psutil
+import time
+# List of known safe processes (example)
+whitelist = ['explorer.exe', 'chrome.exe', 'python.exe', 'svchost.exe']
+def monitor_processes():
+    while True:
+        for proc in psutil.process_iter(['pid', 'name', 'cpu_percent']):
+            try:
+                name = proc.info['name']
+                cpu = proc.info['cpu_percent']
+                if name not in whitelist and cpu > 50:
+                    print(f"Alert: Suspicious process detected - {name} (PID: {proc.pid}) using {cpu}% CPU")
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        time.sleep(5)
+if __name__ == "__main__":
+    print("Starting process monitor...")
+    monitor_processes()
